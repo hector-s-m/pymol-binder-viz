@@ -12,31 +12,15 @@ This applies publication settings: soft shadows, smooth rendering, no shine, 60%
 
 ## 🎨 Commands
 
-### `binder` - Highlight Your Designed Binder
+### `binder` - Highlight Binder and interacting residues
 
-binder A # Single chain binder
-binder B+C # Multi-chain binder
+binder A # Single chain binder (e.g., miniproteins, scFvs, nanobodies)
+binder B+C # Multi-chain binder (e.g., Fabs or multimeric binders)
 
-text
-
-**What it does:**
-- 🟠 Binder → **salmon**
-- 🔵 Target → **teal**  
-- Shows sticks within 4Å of interface
-- Elements colored (N=blue, O=red, S=yellow)
-
-### `interface` - Analyze Protein Interfaces
-
+### `interface` - Highlight atoms at an interface
 interface # Auto-detect all chains
-interface A, B+C # Specify entities
+interface A, B+C # Specify clustered entities (e.g., A=antigen, B+C=Fab)
 interface A, B, C # Three separate chains
-
-text
-
-**What it does:**
-- 🌈 Colors each entity differently
-- Shows interface residues (within 4Å)
-- ⚡ Displays hydrogen bonds (dashed lines)
 
 ## 💡 Typical Workflow
 
