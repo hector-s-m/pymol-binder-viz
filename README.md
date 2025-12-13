@@ -3,9 +3,8 @@ Visualization of protein structures in PyMOL with some functionalities useful fo
 
 ## 🚀 Quick Start
 
+Download to home PyMOL directory, and run:
 run polish.py
-
-text
 
 This applies publication settings: soft shadows, smooth rendering, no shine, 60% surface transparency.
 
