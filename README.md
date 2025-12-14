@@ -2,10 +2,9 @@
 Visualization of protein structures in PyMOL with some functionalities useful for protein binders. To be used in the PyMOL CLI.
 
 ## 🚀 Quick Start
-Download to home PyMOL directory, and first run:
+Download to home PyMOL directory, and always first run:
 ```python
   run polish.py
-
 ```
 This applies preliminary publication-quality settings.
 
@@ -18,17 +17,16 @@ This applies preliminary publication-quality settings.
 ```python
   binder B+C # Multi-chain binder (e.g., Fabs or multimeric binders)
 ```
-### `interface` - Highlight atoms at an interface
+### `interface` - Highlight interface atoms
+Conditionless highlighting of all interfaces:
 ```python
   interface
 ```
+Syntax for more complex interfaces:
 ```python
-  interface A, B+C # Specify multi-chain entities (e.g., A=antigen, B+C=Fab)
+  interface A, B+C,D+E, F # Three separate chains
 ```
-```python
-  interface A, B, C # Three separate chains
-```
-Also possible to execute for conditionless focusing on interface
+Conditionless focusing on interface:
 ```python
   zoom_interface
 ```
