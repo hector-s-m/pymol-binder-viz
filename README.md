@@ -36,6 +36,7 @@ Conditionless focusing on interface:
 Color with variable radius putty. Similar to preset--> b-factor putty but only applying putty on low pLDDT loops.
 ```python
   color_by_plddt # For predicted structures
+  color_by_plddt A # Specify which chain to color by plddt
 ```
   or
 ```python
