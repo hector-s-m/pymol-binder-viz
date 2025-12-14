@@ -186,7 +186,7 @@ def color_by_plddt(*args, _self=cmd):
     cmd.show("cartoon", sel)
     cmd.cartoon("automatic", sel)
     cmd.cartoon("putty", f"{sel} and (q < 85)")
-    cmd.set("cartoon_putty_radius", 0.3)
+    cmd.set("cartoon_putty_radius", 0.4)
     cmd.set("cartoon_putty_scale_min", 1.0)
     cmd.set("cartoon_putty_scale_max", 5.0)
     cmd.set("cartoon_putty_transform", 0)
