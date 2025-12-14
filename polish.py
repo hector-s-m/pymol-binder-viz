@@ -1,9 +1,9 @@
 from pymol import cmd
 
+# Preliminary settings
 cmd.bg_color("white")
 cmd.remove("hydrogen")
 cmd.remove("solvent")
-
 cmd.set("render_as_cylinders", "on")
 cmd.set("alignment_as_cylinders", "on")
 cmd.set("dash_as_cylinders", "on")
@@ -13,7 +13,6 @@ cmd.set("nonbonded_as_cylinders", "on")
 cmd.set("ribbon_as_cylinders", "on")
 cmd.set("stick_as_cylinders", "on")
 cmd.set("dot_as_spheres", "on")
-
 cmd.set("antialias", 2)
 cmd.set("antialias_shader", 2)
 cmd.set("ray_trace_mode", 0)
@@ -24,9 +23,7 @@ cmd.set("direct", 0.9)
 cmd.set("reflect", 0.1)
 cmd.set("specular", 0)
 cmd.set("fog", 0)
-
 cmd.set("transparency", 0.6)
-
 cmd.set("stick_as_cylinders", "on")
 cmd.set("cartoon_dumbbell_length", 1.4)
 cmd.set("cartoon_sampling", 14)
@@ -34,13 +31,11 @@ cmd.set("ribbon_sampling", 10)
 cmd.set("stick_quality", 15)
 cmd.set("cartoon_ladder_mode", 1)
 cmd.set("stick_radius", 0.3)
-
 cmd.delete("hbonds")
 cmd.hide("everything")
 cmd.hide("sticks")
 cmd.show("cartoon")
 cmd.hide("labels")
-
 cmd.color("teal", "all")
 cmd.util.cnc("all")
 
@@ -61,7 +56,6 @@ def binder(chains, _self=cmd):
     cmd.show("sticks", f"byres (({binder_sel}) within 4 of ({target_sel}))")
     cmd.util.cnc("all")
     
-    print(f"Binder: {chains}")
 
 def interface(*args, _self=cmd):
     cmd.hide("sticks", "all")
@@ -114,9 +108,6 @@ def interface(*args, _self=cmd):
                 cmd.distance("hbonds", f"({entity_sel}) within 4 of ({other_sel})", f"({other_sel}) within 4 of ({entity_sel})", cutoff=3.5, mode=2, label=0)
         
         cmd.hide("labels", "hbonds")
-        print("Interface residues shown")
-    else:
-        print("No interface detected")
 
 def zoom_interface(_self=cmd):
     cmd.hide("sticks", "all")
@@ -162,14 +153,34 @@ def zoom_interface(_self=cmd):
         
         cmd.hide("labels", "hbonds")
         cmd.zoom(full_sel, 2)
-        print("Zoomed to interface with sticks and H-bonds")
-    else:
-        print("No interface detected")
 
 def color_by_b(_self=cmd):
-    cmd.spectrum("b", "blue_white_red", "all")
+    cmd.spectrum("b", "rainbow", "all")
+    cmd.show("cartoon", "all")
+    cmd.cartoon("automatic", "all")
+    cmd.set("cartoon_putty_radius", 0.3)
+    cmd.set("cartoon_putty_scale_min", 1.0)
+    cmd.set("cartoon_putty_scale_max", 5.0)
+    cmd.set("cartoon_putty_transform", 0) # High B = Thick
+    cmd.set("cartoon_putty_range", 1.0)
+    cmd.cartoon("putty", "all")
+    cmd.rebuild()
     cmd.util.cnc("all")
-    print("Colored by B-factor/pLDDT (blue=low, red=high)")
+
+def color_by_plddt(_self=cmd):
+    cmd.alter("all", "b = 100 - q")
+    cmd.spectrum("q", "red_white_blue", "all", minimum=40, maximum=100)
+    cmd.show("cartoon", "all")
+    cmd.cartoon("automatic", "all")
+    cmd.cartoon("putty", "q < 85")
+    cmd.set("cartoon_putty_radius", 0.3)
+    cmd.set("cartoon_putty_scale_min", 1.0)
+    cmd.set("cartoon_putty_scale_max", 5.0)
+    cmd.set("cartoon_putty_transform", 0)
+    cmd.set("cartoon_putty_range", 3.0)
+    cmd.rebuild()
+    cmd.util.cnc("all")
+    cmd.alter("all", "b = 100 - q")
 
 def clean(_self=cmd):
     cmd.hide("sticks", "all")
@@ -178,15 +189,14 @@ def clean(_self=cmd):
     cmd.hide("mesh", "all")
     cmd.hide("labels", "all")
     cmd.show("cartoon", "all")
+    cmd.cartoon("automatic", "all")
     cmd.color("teal", "all")
     cmd.util.cnc("all")
     cmd.zoom("all")
-    print("Reset to clean state")
 
 cmd.extend("binder", binder)
 cmd.extend("interface", interface)
 cmd.extend("zoom_interface", zoom_interface)
 cmd.extend("color_by_b", color_by_b)
+cmd.extend("color_by_plddt", color_by_plddt)
 cmd.extend("clean", clean)
-
-print("Polish settings applied.")
