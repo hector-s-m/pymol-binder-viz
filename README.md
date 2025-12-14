@@ -13,13 +13,19 @@ This applies preliminary publication-quality settings.
 ### `binder` - Highlight Binder and interacting residues
 ```python
   binder A # Single chain binder (e.g., miniproteins, scFvs, nanobodies)
+```
   or
+```python
   binder B+C # Multi-chain binder (e.g., Fabs or multimeric binders)
 ```
 ### `interface` - Highlight atoms at an interface
 ```python
-  interface # Auto-detect all chains
-  interface A, B+C # Specify clustered entities (e.g., A=antigen, B+C=Fab)
+  interface
+```
+```python
+  interface A, B+C # Specify multi-chain entities (e.g., A=antigen, B+C=Fab)
+```
+```python
   interface A, B, C # Three separate chains
 ```
 Also possible to execute for conditionless focusing on interface
@@ -34,4 +40,7 @@ Also possible to execute for conditionless focusing on interface
 ```
 
 ### `clean` - Reset View
-clean # Resets to standard teal cartoon
+To reset standard cartoon
+```python
+  clean
+```
