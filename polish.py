@@ -108,6 +108,7 @@ def interface(*args, _self=cmd):
                 cmd.distance("hbonds", f"({entity_sel}) within 4 of ({other_sel})", f"({other_sel}) within 4 of ({entity_sel})", cutoff=3.5, mode=2, label=0)
         
         cmd.hide("labels", "hbonds")
+        # cmd.zoom("hbonds", 1)
 
 def zoom_interface(_self=cmd):
     cmd.hide("sticks", "all")
@@ -167,20 +168,32 @@ def color_by_b(_self=cmd):
     cmd.rebuild()
     cmd.util.cnc("all")
 
-def color_by_plddt(_self=cmd):
-    cmd.alter("all", "b = 100 - q")
-    cmd.spectrum("q", "red_white_blue", "all", minimum=40, maximum=100)
-    cmd.show("cartoon", "all")
-    cmd.cartoon("automatic", "all")
-    cmd.cartoon("putty", "q < 85")
+def color_by_plddt(*args, _self=cmd):
+    if not args:
+        sel = "all"
+    else:
+        chains = []
+        for arg in args:
+            parts = arg.split('+')
+            chains.extend([p.strip() for p in parts])
+        
+        sel_list = [f"chain {c}" for c in chains]
+        sel = f"({' or '.join(sel_list)})"
+
+    cmd.alter(sel, "q = b")
+    cmd.alter(sel, "b = 100 - q")
+    cmd.spectrum("q", "red_white_blue", sel, minimum=50, maximum=100)
+    cmd.show("cartoon", sel)
+    cmd.cartoon("automatic", sel)
+    cmd.cartoon("putty", f"{sel} and (q < 85)")
     cmd.set("cartoon_putty_radius", 0.3)
     cmd.set("cartoon_putty_scale_min", 1.0)
     cmd.set("cartoon_putty_scale_max", 5.0)
     cmd.set("cartoon_putty_transform", 0)
     cmd.set("cartoon_putty_range", 3.0)
     cmd.rebuild()
-    cmd.util.cnc("all")
-    cmd.alter("all", "b = 100 - q")
+    cmd.util.cnc(sel)
+    cmd.alter(sel, "b = q")
 
 def clean(_self=cmd):
     cmd.hide("sticks", "all")
