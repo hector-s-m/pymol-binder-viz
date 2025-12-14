@@ -118,7 +118,75 @@ def interface(*args, _self=cmd):
     else:
         print("No interface detected")
 
+def zoom_interface(_self=cmd):
+    cmd.hide("sticks", "all")
+    cmd.delete("hbonds")
+    
+    chains = cmd.get_chains()
+    entities = [[c] for c in chains]
+    
+    colors = ["salmon", "teal", "lightblue", "palegreen", "wheat", "lightpink", "paleyellow", "lightorange"]
+    
+    for i, entity in enumerate(entities):
+        color = colors[i % len(colors)]
+        entity_sel = " or ".join([f"chain {c}" for c in entity])
+        cmd.color(color, entity_sel)
+    
+    interface_residues = []
+    for i, entity in enumerate(entities):
+        entity_sel = " or ".join([f"chain {c}" for c in entity])
+        other_entities = [e for j, e in enumerate(entities) if j != i]
+        
+        if other_entities:
+            other_chains = []
+            for other_entity in other_entities:
+                other_chains.extend(other_entity)
+            other_sel = " or ".join([f"chain {c}" for c in other_chains])
+            interface_residues.append(f"(({entity_sel}) within 4 of ({other_sel}))")
+    
+    if interface_residues:
+        full_sel = f"byres ({' or '.join(interface_residues)})"
+        cmd.show("sticks", full_sel)
+        cmd.util.cnc("all")
+        
+        for i, entity in enumerate(entities):
+            entity_sel = " or ".join([f"chain {c}" for c in entity])
+            other_entities = [e for j, e in enumerate(entities) if j != i]
+            
+            if other_entities:
+                other_chains = []
+                for other_entity in other_entities:
+                    other_chains.extend(other_entity)
+                other_sel = " or ".join([f"chain {c}" for c in other_chains])
+                cmd.distance("hbonds", f"({entity_sel}) within 4 of ({other_sel})", f"({other_sel}) within 4 of ({entity_sel})", cutoff=3.5, mode=2, label=0)
+        
+        cmd.hide("labels", "hbonds")
+        cmd.zoom(full_sel, 2)
+        print("Zoomed to interface with sticks and H-bonds")
+    else:
+        print("No interface detected")
+
+def color_by_b(_self=cmd):
+    cmd.spectrum("b", "blue_white_red", "all")
+    cmd.util.cnc("all")
+    print("Colored by B-factor/pLDDT (blue=low, red=high)")
+
+def clean(_self=cmd):
+    cmd.hide("sticks", "all")
+    cmd.delete("hbonds")
+    cmd.hide("surface", "all")
+    cmd.hide("mesh", "all")
+    cmd.hide("labels", "all")
+    cmd.show("cartoon", "all")
+    cmd.color("teal", "all")
+    cmd.util.cnc("all")
+    cmd.zoom("all")
+    print("Reset to clean state")
+
 cmd.extend("binder", binder)
 cmd.extend("interface", interface)
+cmd.extend("zoom_interface", zoom_interface)
+cmd.extend("color_by_b", color_by_b)
+cmd.extend("clean", clean)
 
 print("Polish settings applied.")
