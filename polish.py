@@ -4,90 +4,83 @@ from pymol import cmd
 cmd.bg_color("white")
 cmd.remove("hydrogen")
 cmd.remove("solvent")
-cmd.set("render_as_cylinders", "on")
-cmd.set("alignment_as_cylinders", "on")
-cmd.set("dash_as_cylinders", "on")
-cmd.set("line_as_cylinders", "on")
-cmd.set("mesh_as_cylinders", "on")
-cmd.set("nonbonded_as_cylinders", "on")
-cmd.set("ribbon_as_cylinders", "on")
-cmd.set("stick_as_cylinders", "on")
+
+# Consolidated cylinder settings
+for setting in ["render", "alignment", "dash", "line", "mesh", "nonbonded", "ribbon", "stick"]:
+    cmd.set(f"{setting}_as_cylinders", "on")
 cmd.set("dot_as_spheres", "on")
+
+# Ray tracing settings
 cmd.set("antialias", 2)
 cmd.set("antialias_shader", 2)
 cmd.set("ray_trace_mode", 0)
 cmd.set("ray_shadows", 1)
-cmd.set("shininess", 10)
-cmd.set("ambient", 0.25)
-cmd.set("direct", 0.9)
-cmd.set("reflect", 0.1)
-cmd.set("specular", 0)
-cmd.set("fog", 0)
-cmd.set("transparency", 0.6)
-cmd.set("stick_as_cylinders", "on")
-cmd.set("cartoon_dumbbell_length", 1.4)
-cmd.set("cartoon_sampling", 14)
-cmd.set("ribbon_sampling", 10)
-cmd.set("stick_quality", 15)
-cmd.set("cartoon_ladder_mode", 1)
-cmd.set("stick_radius", 0.3)
+
+# Material properties
+for prop, val in [("shininess", 10), ("ambient", 0.25), ("direct", 0.9), 
+                   ("reflect", 0.1), ("specular", 0), ("fog", 0), ("transparency", 0.6)]:
+    cmd.set(prop, val)
+
+# Cartoon/stick quality
+for prop, val in [("cartoon_dumbbell_length", 1.4), ("cartoon_sampling", 14), 
+                   ("ribbon_sampling", 10), ("stick_quality", 15), 
+                   ("cartoon_ladder_mode", 1), ("stick_radius", 0.3)]:
+    cmd.set(prop, val)
+
+# Initial display
 cmd.delete("hbonds")
 cmd.hide("everything")
-cmd.hide("sticks")
 cmd.show("cartoon")
 cmd.hide("labels")
 cmd.color("teal", "all")
 cmd.util.cnc("all")
 
-def binder(chains, _self=cmd):
+# Helper function
+def parse_chains(chain_arg):
+    """Parse chain argument into selection string."""
+    if "+" in chain_arg:
+        return " or ".join([f"chain {c}" for c in chain_arg.split("+")])
+    return f"chain {chain_arg}"
+
+def cleanup(_self=cmd):
+    """Common cleanup operations."""
     cmd.hide("sticks", "all")
     cmd.delete("hbonds")
-    
-    if "+" in chains:
-        chain_list = chains.split("+")
-        binder_sel = " or ".join([f"chain {c}" for c in chain_list])
-    else:
-        binder_sel = f"chain {chains}"
-    
+
+def binder(chains, _self=cmd):
+    cleanup()
+    binder_sel = parse_chains(chains)
     target_sel = f"not ({binder_sel})"
     
     cmd.color("salmon", binder_sel)
     cmd.color("teal", target_sel)
     cmd.show("sticks", f"byres (({binder_sel}) within 4 of ({target_sel}))")
     cmd.util.cnc("all")
-    
 
-def interface(*args, _self=cmd):
-    cmd.hide("sticks", "all")
-    cmd.delete("hbonds")
+def interface(*args, zoom=False, _self=cmd):
+    cleanup()
     
+    entities = []
     if not args:
-        chains = cmd.get_chains()
-        entities = [[c] for c in chains]
+        entities = [[c] for c in cmd.get_chains()]
     else:
-        entities = []
         for arg in args:
-            if "+" in arg:
-                entities.append(arg.split("+"))
-            else:
-                entities.append([arg])
+            entities.append(arg.split("+") if "+" in arg else [arg])
     
     colors = ["salmon", "teal", "lightblue", "palegreen", "wheat", "lightpink", "paleyellow", "lightorange"]
     
+    # Color entities
     for i, entity in enumerate(entities):
-        color = colors[i % len(colors)]
         entity_sel = " or ".join([f"chain {c}" for c in entity])
-        cmd.color(color, entity_sel)
+        cmd.color(colors[i % len(colors)], entity_sel)
     
+    # Build interface selection
     interface_residues = []
     for i, entity in enumerate(entities):
         entity_sel = " or ".join([f"chain {c}" for c in entity])
-        other_entities = [e for j, e in enumerate(entities) if j != i]
+        other_chains = [c for j, e in enumerate(entities) if j != i for c in e]
         
-        if other_entities:
-            other_chains = []
-            for other_entity in other_entities:
-                other_chains.extend(other_entity)
+        if other_chains:
             other_sel = " or ".join([f"chain {c}" for c in other_chains])
             interface_residues.append(f"(({entity_sel}) within 4 of ({other_sel}))")
     
@@ -96,74 +89,36 @@ def interface(*args, _self=cmd):
         cmd.show("sticks", full_sel)
         cmd.util.cnc("all")
         
+        # Add hydrogen bonds
         for i, entity in enumerate(entities):
             entity_sel = " or ".join([f"chain {c}" for c in entity])
-            other_entities = [e for j, e in enumerate(entities) if j != i]
+            other_chains = [c for j, e in enumerate(entities) if j != i for c in e]
             
-            if other_entities:
-                other_chains = []
-                for other_entity in other_entities:
-                    other_chains.extend(other_entity)
+            if other_chains:
                 other_sel = " or ".join([f"chain {c}" for c in other_chains])
-                cmd.distance("hbonds", f"({entity_sel}) within 4 of ({other_sel})", f"({other_sel}) within 4 of ({entity_sel})", cutoff=3.5, mode=2, label=0)
+                cmd.distance("hbonds", f"({entity_sel}) within 4 of ({other_sel})", 
+                           f"({other_sel}) within 4 of ({entity_sel})", 
+                           cutoff=3.5, mode=2, label=0)
         
         cmd.hide("labels", "hbonds")
-        # cmd.zoom("hbonds", 1)
+        
+        if zoom:
+            cmd.zoom(full_sel, 2)
 
 def zoom_interface(_self=cmd):
-    cmd.hide("sticks", "all")
-    cmd.delete("hbonds")
-    
-    chains = cmd.get_chains()
-    entities = [[c] for c in chains]
-    
-    colors = ["salmon", "teal", "lightblue", "palegreen", "wheat", "lightpink", "paleyellow", "lightorange"]
-    
-    for i, entity in enumerate(entities):
-        color = colors[i % len(colors)]
-        entity_sel = " or ".join([f"chain {c}" for c in entity])
-        cmd.color(color, entity_sel)
-    
-    interface_residues = []
-    for i, entity in enumerate(entities):
-        entity_sel = " or ".join([f"chain {c}" for c in entity])
-        other_entities = [e for j, e in enumerate(entities) if j != i]
-        
-        if other_entities:
-            other_chains = []
-            for other_entity in other_entities:
-                other_chains.extend(other_entity)
-            other_sel = " or ".join([f"chain {c}" for c in other_chains])
-            interface_residues.append(f"(({entity_sel}) within 4 of ({other_sel}))")
-    
-    if interface_residues:
-        full_sel = f"byres ({' or '.join(interface_residues)})"
-        cmd.show("sticks", full_sel)
-        cmd.util.cnc("all")
-        
-        for i, entity in enumerate(entities):
-            entity_sel = " or ".join([f"chain {c}" for c in entity])
-            other_entities = [e for j, e in enumerate(entities) if j != i]
-            
-            if other_entities:
-                other_chains = []
-                for other_entity in other_entities:
-                    other_chains.extend(other_entity)
-                other_sel = " or ".join([f"chain {c}" for c in other_chains])
-                cmd.distance("hbonds", f"({entity_sel}) within 4 of ({other_sel})", f"({other_sel}) within 4 of ({entity_sel})", cutoff=3.5, mode=2, label=0)
-        
-        cmd.hide("labels", "hbonds")
-        cmd.zoom(full_sel, 2)
+    interface(zoom=True, _self=_self)
 
 def color_by_b(_self=cmd):
     cmd.spectrum("b", "rainbow", "all")
     cmd.show("cartoon", "all")
     cmd.cartoon("automatic", "all")
-    cmd.set("cartoon_putty_radius", 0.3)
-    cmd.set("cartoon_putty_scale_min", 1.0)
-    cmd.set("cartoon_putty_scale_max", 5.0)
-    cmd.set("cartoon_putty_transform", 0) # High B = Thick
-    cmd.set("cartoon_putty_range", 1.0)
+    
+    # Putty settings
+    for prop, val in [("cartoon_putty_radius", 0.3), ("cartoon_putty_scale_min", 1.0),
+                       ("cartoon_putty_scale_max", 5.0), ("cartoon_putty_transform", 0),
+                       ("cartoon_putty_range", 1.0)]:
+        cmd.set(prop, val)
+    
     cmd.cartoon("putty", "all")
     cmd.rebuild()
     cmd.util.cnc("all")
@@ -172,13 +127,8 @@ def color_by_plddt(*args, _self=cmd):
     if not args:
         sel = "all"
     else:
-        chains = []
-        for arg in args:
-            parts = arg.split('+')
-            chains.extend([p.strip() for p in parts])
-        
-        sel_list = [f"chain {c}" for c in chains]
-        sel = f"({' or '.join(sel_list)})"
+        chains = [p.strip() for arg in args for p in arg.split('+')]
+        sel = f"({' or '.join([f'chain {c}' for c in chains])})"
 
     cmd.alter(sel, "q = b")
     cmd.alter(sel, "b = 100 - q")
@@ -186,11 +136,12 @@ def color_by_plddt(*args, _self=cmd):
     cmd.show("cartoon", sel)
     cmd.cartoon("automatic", sel)
     cmd.cartoon("putty", f"{sel} and (q < 85)")
-    cmd.set("cartoon_putty_radius", 0.4)
-    cmd.set("cartoon_putty_scale_min", 1.0)
-    cmd.set("cartoon_putty_scale_max", 5.0)
-    cmd.set("cartoon_putty_transform", 0)
-    cmd.set("cartoon_putty_range", 3.0)
+    
+    for prop, val in [("cartoon_putty_radius", 0.4), ("cartoon_putty_scale_min", 1.0),
+                       ("cartoon_putty_scale_max", 5.0), ("cartoon_putty_transform", 0),
+                       ("cartoon_putty_range", 3.0)]:
+        cmd.set(prop, val)
+    
     cmd.rebuild()
     cmd.util.cnc(sel)
     cmd.alter(sel, "b = q")
@@ -198,9 +149,8 @@ def color_by_plddt(*args, _self=cmd):
 def clean(_self=cmd):
     cmd.hide("sticks", "all")
     cmd.delete("hbonds")
-    cmd.hide("surface", "all")
-    cmd.hide("mesh", "all")
-    cmd.hide("labels", "all")
+    for rep in ["surface", "mesh", "labels"]:
+        cmd.hide(rep, "all")
     cmd.show("cartoon", "all")
     cmd.cartoon("automatic", "all")
     cmd.color("teal", "all")
