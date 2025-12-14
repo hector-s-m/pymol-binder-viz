@@ -24,7 +24,8 @@ for prop, val in [("shininess", 10), ("ambient", 0.25), ("direct", 0.9),
 # Cartoon/stick quality
 for prop, val in [("cartoon_dumbbell_length", 1.4), ("cartoon_sampling", 14), 
                    ("ribbon_sampling", 10), ("stick_quality", 15), 
-                   ("cartoon_ladder_mode", 1), ("stick_radius", 0.3)]:
+                   ("cartoon_ladder_mode", 1), ("stick_radius", 0.3), 
+                   ("dash_radius", 0.15)]:
     cmd.set(prop, val)
 
 # Initial display
@@ -163,3 +164,4 @@ cmd.extend("zoom_interface", zoom_interface)
 cmd.extend("color_by_b", color_by_b)
 cmd.extend("color_by_plddt", color_by_plddt)
 cmd.extend("clean", clean)
+
