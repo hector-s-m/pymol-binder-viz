@@ -19,6 +19,7 @@ This applies preliminary publication-quality settings.
 ```python
   binder B+C # Multi-chain binder (e.g., Fabs or multimeric binders)
 ```
+<img width="1048" height="651" alt="image" src="https://github.com/user-attachments/assets/c0ab22b2-161e-4557-8156-eb177e8a7e9d" />
 ### `interface` - Highlight interface atoms
 Conditionless highlighting of all interfaces:
 ```python
@@ -38,6 +39,7 @@ Color with variable radius putty. Similar to preset--> b-factor putty but only a
   color_by_plddt # For predicted structures
   color_by_plddt A # Specify which chain to color by plddt
 ```
+<img width="886" height="622" alt="image" src="https://github.com/user-attachments/assets/e7405b77-fc4e-4f7f-b50e-d6d28f56a587" />
   or
 ```python
   color_by_b # For experimental structures
