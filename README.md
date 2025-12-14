@@ -31,7 +31,7 @@ Conditionless focusing on interface:
   zoom_interface
 ```
 ### `color_by_plddt` - pLDDT or B-factor Viz
-Color with colored and variable radius putty. Similar to preset--> b-factor putty but only applying putty on low pLDDT loops.
+Color with variable radius putty. Similar to preset--> b-factor putty but only applying putty on low pLDDT loops.
 ```python
   color_by_plddt # For predicted structures
 ```
