@@ -22,3 +22,16 @@ This applies preliminary publication-quality settings.
   interface A, B+C # Specify clustered entities (e.g., A=antigen, B+C=Fab)
   interface A, B, C # Three separate chains
 ```
+Also possible to execute for conditionless focusing on interface
+```python
+  zoom_interface
+```
+### `color_by_plddt` - pLDDT or B-factor Viz
+```python
+  color_by_plddt
+  or
+  color_by_b
+```
+
+### `clean` - Reset View
+clean # Resets to standard teal cartoon
