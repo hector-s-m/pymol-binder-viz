@@ -24,17 +24,20 @@ Conditionless highlighting of all interfaces:
 ```
 Syntax for more complex interfaces:
 ```python
-  interface A, B+C,D+E, F # Three separate chains
+  interface A, B+C, D+E, F
 ```
 Conditionless focusing on interface:
 ```python
   zoom_interface
 ```
 ### `color_by_plddt` - pLDDT or B-factor Viz
+Color with colored and variable radius putty. Similar to preset--> b-factor putty but only applying putty on low pLDDT loops.
 ```python
-  color_by_plddt
+  color_by_plddt # For predicted structures
+```
   or
-  color_by_b
+```python
+  color_by_b # For experimental structures
 ```
 
 ### `clean` - Reset View
