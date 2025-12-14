@@ -19,7 +19,7 @@ This applies preliminary publication-quality settings.
 ```python
   binder B+C # Multi-chain binder (e.g., Fabs or multimeric binders)
 ```
-<img width="300" height="200" alt="image" src="https://github.com/user-attachments/assets/c0ab22b2-161e-4557-8156-eb177e8a7e9d" />
+<img width="500" height="300" alt="image" src="https://github.com/user-attachments/assets/c0ab22b2-161e-4557-8156-eb177e8a7e9d" />
 
 ### `interface` - Highlight interface atoms
 Conditionless highlighting of all interfaces:
