@@ -40,7 +40,7 @@ Color with variable radius putty. Similar to preset--> b-factor putty but only a
   color_by_plddt # For predicted structures
   color_by_plddt A # Specify which chain to color by plddt
 ```
-<img width="886" height="622" alt="image" src="https://github.com/user-attachments/assets/e7405b77-fc4e-4f7f-b50e-d6d28f56a587" />
+<img width="500" height="300" alt="image" src="https://github.com/user-attachments/assets/e7405b77-fc4e-4f7f-b50e-d6d28f56a587" />
   or
 ```python
   color_by_b # For experimental structures
