@@ -1,4 +1,4 @@
-from pymol import cmd
+from pymol import cmd 
 
 # Preliminary settings
 cmd.bg_color("white")
@@ -164,4 +164,5 @@ cmd.extend("zoom_interface", zoom_interface)
 cmd.extend("color_by_b", color_by_b)
 cmd.extend("color_by_plddt", color_by_plddt)
 cmd.extend("clean", clean)
+
 
