@@ -1,7 +1,7 @@
 from pymol import cmd
 
 # Preliminary settings
-cmd.bg_color("white")
+cmd.bg_color("black")
 cmd.remove("hydrogen")
 cmd.remove("solvent")
 
